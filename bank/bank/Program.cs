@@ -21,6 +21,7 @@ namespace ConsoleApp1
 
             account1.MakeWithdrawal(123, DateTime.UtcNow, ";)");
             Console.WriteLine($"Balance: {account1.Balance}");
+            Console.WriteLine(account1.GetAccountHistory());
 
             try
             {
