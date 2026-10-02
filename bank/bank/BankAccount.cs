@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    internal class BankAccount
+    // BankAccount - потомок класс object 
+    public class BankAccount
     {
+
+        private readonly decimal _minimalBalance;
         private List<Transaction> _allTransactions = new List<Transaction>();
         public string Owner { get; private set; }
         public string Number { get; }
@@ -30,17 +33,25 @@ namespace ConsoleApp1
 
         private static int s_accountNumberSeed = 1000000000;
 
-        public BankAccount(string name, decimal initialBalance)
+        public BankAccount(string name, decimal initialBalance):this(name, initialBalance, 0)
         {
-
-
-            // this.balance = initialBalance;
-            MakeDeposite(initialBalance, DateTime.UtcNow, "initial balance");
-            Owner = name;
-            Number = s_accountNumberSeed.ToString();
-            s_accountNumberSeed++;
+            
         }
 
+        public BankAccount(string name, decimal initialBalance, decimal minimalBalance)
+        {
+            // this.balance = initialBalance;            
+            Owner = name;
+
+            Number = s_accountNumberSeed.ToString();
+            s_accountNumberSeed++;
+
+            _minimalBalance = minimalBalance;
+
+            if(initialBalance>0)
+            MakeDeposite(initialBalance, DateTime.UtcNow, "initial balance");
+
+        }
         public void MakeDeposite(decimal amout, DateTime date, string note)
         {
             if (amout <= 0)
@@ -56,17 +67,36 @@ namespace ConsoleApp1
 
         public void MakeWithdrawal(decimal amout, DateTime date, string note)
         {
-            if (amout <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(amout), "Amount of withdrawal must be positive");
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amout);
 
-            if (Balance < amout)
+            Transaction? overdraftTransaction = CheckWithdrawalLimit(Balance - amout < _minimalBalance);
+            Transaction? withdrawal = new(-amout, date, note);
+
+            _allTransactions.Add(withdrawal);
+
+            if(overdraftTransaction is not null)
+            {
+                _allTransactions.Add(overdraftTransaction);
+            }
+        }
+
+        // protected - модификатор доступа, который означает,
+        // что этот метод можно вызвать только из текущего и дочернего класса 
+        // Клиент (внешний код) данный метод вызвать не может 
+        protected virtual Transaction? CheckWithdrawalLimit(bool isOverdrawn)
+        {
+            if (isOverdrawn)
             {
                 throw new InvalidOperationException("Not sufficient rubls for this withdrawal");
+
             }
-            var deposite = new Transaction(amout, date, note);
-            _allTransactions.Add(deposite);
+            else
+            {
+                // default - содержит значение по умолчанию, так как тип возвращаемого значения - ссылочная, то 
+                // default = null
+                return default; // == return null;
+            }
+
         }
 
         public string GetAccountHistory()
@@ -83,6 +113,21 @@ namespace ConsoleApp1
             }
             return report.ToString();
         }
+        // Ключевое слово virtual позволяет в дочернем классе предоставить другую реализацию этого метода 
+        public virtual void PerformMouthAndTransactions()
+        {
+
+        }
+
+        // Переопределяем метод базового класса - класса object
+       // ToString - возвращает строку с информацией об объекте
+        public override string ToString()
+        {
+            return $"Owner: {Owner}\taccount number: {Number} (тип счета {GetType()})";
+        }
+
     }
+
+    
 }
 
