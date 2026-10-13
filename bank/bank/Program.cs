@@ -14,7 +14,41 @@ namespace ConsoleApp1
             BankAccount account1 = new BankAccount("Danil", 10000000);
             BankAccount account2 = new BankAccount("Ulyana", 1000);
 
-            Console.WriteLine($"{account1.Owner}   {account1.Balance} {account1.Number}");
+            Bank bank = new Bank();
+
+            try
+            {
+                bank.Transfer(account1, account2, 1000m);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Transfer failed: {ex.Message}");
+            }
+
+
+
+            BankAccount premiumAccount = new BankAccount("Otagey", 15000m, 0m, AccountStatus.Premium);
+            BankAccount vipAccount = new BankAccount("Constantin", 20000m, 0m, AccountStatus.VIP);
+
+            premiumAccount.PerformMouthAndTransactions();
+
+            Console.WriteLine($"Premium balance: {premiumAccount.Balance}");
+            Console.WriteLine(premiumAccount.GetAccountHistory());
+
+            vipAccount.PerformMouthAndTransactions();
+
+            Console.WriteLine($"VIP balance after monthly operation: {vipAccount.Balance}");
+            Console.WriteLine(vipAccount.GetAccountHistory());
+
+            vipAccount.MakeWithdrawal(1000m, DateTime.UtcNow, "Test VIP withdrawal");
+
+            Console.WriteLine($"VIP balance after withdrawal: {vipAccount.Balance}");
+            Console.WriteLine(vipAccount.GetAccountHistory());
+
+            Console.WriteLine("VIP audit log:");
+            vipAccount.PrintAuditLog();
+
+            Console.WriteLine($"\n{account1.Owner}   {account1.Balance} {account1.Number}");
             Console.WriteLine($"{account2.Owner}   {account2.Balance} {account2.Number}");
 
             account1.MakeDeposite(12000, DateTime.UtcNow, ";)");
@@ -57,6 +91,8 @@ namespace ConsoleApp1
                 account.PerformMouthAndTransactions();
                 Console.WriteLine(account.GetAccountHistory());
             }
+            Console.WriteLine("Regular account audit log:");
+            account1.PrintAuditLog();
 
             lineOfCredit.MakeWithdrawal(600m, DateTime.UtcNow, "credit");
             Console.WriteLine(lineOfCredit.GetAccountHistory());
