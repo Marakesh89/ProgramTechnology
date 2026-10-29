@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/SRC/">
+    <Project Path="SRC/BankAccounts.Core/BankAccounts.Core.csproj" Id="b38c9249-65de-4425-aaca-accc92d5d628" />
+  </Folder>
   <Project Path="bank/bank.csproj" />
 </Solution>
