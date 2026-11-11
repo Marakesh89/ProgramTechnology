@@ -1,4 +1,4 @@
-﻿namespace NumGameSOLID.GuessNumber.Interfaces;
+﻿namespace NumGameSOLID.GuessNumber.RandomNumberGenerator;
 
 public interface INumberGenerator
 {
