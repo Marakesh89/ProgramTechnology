@@ -2,5 +2,5 @@
 
 public interface INumberGenerator
 {
-    int Generate(int max, int min);
+    int Generate(int min, int max);
 }

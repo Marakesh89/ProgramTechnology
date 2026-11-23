@@ -2,9 +2,9 @@
 
 public class GameSettings
 {
-    public int MaxNumber { get; set; }
-    public int MinNumber { get; set; }
-    public int MaxAttempts { get; set; }
+    public int MaxNumber { get;  }
+    public int MinNumber { get; }
+    public int MaxAttempts { get;  }
     public Difficulty DifficultyLevel { get; set; }
 
     public GameSettings(int minNumber, int maxNumber,  int maxAttempts, Difficulty difficultyLevel)

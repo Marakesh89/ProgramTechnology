@@ -1,6 +1,6 @@
 ﻿namespace NumGameSOLID.GuessNumber.Services;
 
-internal class StatisticsStorage
+public class StatisticsStorage
 {
     public bool Save(Statistics statistics)
     {
