@@ -1,126 +1,57 @@
 # ProgramTechnology
+flowchart TD
+    Player("Игрок")
 
-classDiagram
-direction TB
+    subgraph Console["NumGameSOLID_Console — Консольное приложение"]
+        Program("Program<br/>Ввод, вывод и управление игрой")
+    end
 
-namespace NumGameSOLID {
+    subgraph Core["NumGameSOLID — Библиотека классов"]
+        User("User<br/>Профиль пользователя")
+        UserService("UserService<br/>Поиск и регистрация пользователей")
 
-    class Game {
-        -INumberGenerator _numberGenerator
-        -Statistics _statistics
-        -GameSettings _gameSettings
-        -bool _isStarted
-        -bool _isGameOver
-        -int _secretNum
-        -int _attempts
-        +Start() void
-        +Guess(userNumber) GuessResult
-    }
+        Game("Game<br/>Игровая логика и проверка попыток")
+        Result("GuessResult<br/>Результат игрового хода")
 
-    class GuessResult {
-        +string Message
-        +bool IsGameOver
-        +int AttemptsLeft
-    }
+        Settings("GameSettings<br/>Настройки игры")
+        IDifficulty("IDifficulty<br/>Интерфейс сложности")
+        Easy("EasyDifficulty<br/>Лёгкий уровень")
+        Medium("MediumDifficulty<br/>Средний уровень")
+        Hard("HardDifficulty<br/>Сложный уровень")
 
-    class INumberGenerator {
-        <<interface>>
-        +Generate(min, max) int
-    }
+        INumber("INumberGenerator<br/>Интерфейс генерации числа")
+        Random("RandomGenerator<br/>Генератор случайных чисел")
 
-    class RandomGenerator {
-        -Random _random
-        +Generate(min, max) int
-    }
+        Statistics("Statistics<br/>Статистика пользователя")
 
-    class Statistics {
-        -int _gamePlayed
-        -int _totalAttempts
-        -int _maxAttempts
-        -int _minAttempts
-        +TotalAttempts int
-        +AddGame(attempts) void
-        +AvgAttempts double
-        +MinAttempts int
-        +MaxAttempts int
-        +GamePlayed int
-    }
+        IUserStorage("IUserStorage<br/>Интерфейс хранения пользователей")
+        FileStorage("UserFileStorage<br/>Файловое хранилище")
+    end
 
-    class GameSettings {
-        +MinNumber int
-        +MaxNumber int
-        +MaxAttempts int
-        +GameSettings(difficulty)
-    }
+    UsersFile[("users.txt")]
 
-    class IDifficulty {
-        <<interface>>
-        +MinNumber int
-        +MaxNumber int
-        +MaxAttempts int
-    }
+    Player -->|вводит логин и числа| Program
 
-    class EasyDifficulty
-    class MediumDifficulty
-    class HardDifficulty
+    Program -->|авторизация и регистрация| UserService
+    UserService -->|находит и создаёт| User
+    User -->|содержит| Statistics
 
-    class User {
-        +Login string
-        +Statistics Statistics
-    }
+    Program -->|создаёт и запускает| Game
+    Game -->|использует настройки| Settings
+    Game -->|получает случайное число| INumber
+    Random -->|реализует| INumber
+    Game -->|возвращает результат хода| Result
+    Game -->|обновляет статистику| Statistics
 
-    class UserService {
-        -Dictionary _users
-        -IUserStorage _storage
-        +FindUser(login) User
-        +RegisterUser(login) User
-        +SaveUsers() void
-    }
+    Settings -->|получает параметры сложности| IDifficulty
+    Easy -->|реализует| IDifficulty
+    Medium -->|реализует| IDifficulty
+    Hard -->|реализует| IDifficulty
 
-    class IUserStorage {
-        <<interface>>
-        +LoadUsers() List~User~
-        +SaveUsers(users) void
-    }
+    UserService -->|загружает и сохраняет пользователей| IUserStorage
+    FileStorage -->|реализует| IUserStorage
+    FileStorage -->|читает и записывает| UsersFile
 
-    class UserFileStorage {
-        -string _filePath
-        +LoadUsers() List~User~
-        +SaveUsers(users) void
-    }
-}
-
-namespace NumGameSOLID_Console {
-
-    class Program {
-        +Main(args) void
-    }
-}
-
-INumberGenerator <|.. RandomGenerator
-
-IDifficulty <|.. EasyDifficulty
-IDifficulty <|.. MediumDifficulty
-IDifficulty <|.. HardDifficulty
-
-IUserStorage <|.. UserFileStorage
-
-Game --> INumberGenerator : uses
-Game --> Statistics : updates
-Game --> GameSettings : uses
-Game ..> GuessResult : returns
-
-GameSettings --> IDifficulty : receives
-
-User *-- Statistics : owns
-
-UserService --> IUserStorage : uses
-UserService o-- User : manages
-
-UserFileStorage ..> User : loads and saves
-
-Program ..> Game : creates
-Program ..> UserService : creates
-Program ..> UserFileStorage : creates
-Program ..> RandomGenerator : creates
-Program ..> GameSettings : creates
+    Program -->|выбирает сложность| Easy
+    Program -->|выбирает сложность| Medium
+    Program -->|выбирает сложность| Hard
