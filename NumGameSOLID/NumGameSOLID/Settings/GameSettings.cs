@@ -1,29 +1,33 @@
-﻿namespace NumGameSOLID.GuessNumber.Settings;
+﻿using NumGameSOLID.Settings;
+
+namespace NumGameSOLID.GuessNumber.Settings;
 
 public class GameSettings
 {
     public int MaxNumber { get;  }
     public int MinNumber { get; }
     public int MaxAttempts { get;  }
-    public Difficulty DifficultyLevel { get; set; }
 
-    public GameSettings(int minNumber, int maxNumber,  int maxAttempts, Difficulty difficultyLevel)
+    public GameSettings(IDifficulty difficulty)
     {
-        if (minNumber >= maxNumber )
+        if (difficulty == null)
+        {
+            throw new ArgumentNullException(nameof(difficulty));
+        }
+
+        if (difficulty.MinNumber >= difficulty.MaxNumber)
         {
             throw new ArgumentException("Minimum number must be less than maximum number.");
         }
-        if (maxAttempts < 1)
+
+        if (difficulty.MaxAttempts < 1)
         {
             throw new ArgumentException("Maximum attempts must be at least 1.");
         }
 
-        MinNumber = minNumber;
-        MaxNumber = maxNumber;        
-        MaxAttempts = maxAttempts;
-        DifficultyLevel = difficultyLevel;
-
-        
+        MinNumber = difficulty.MinNumber;
+        MaxNumber = difficulty.MaxNumber;
+        MaxAttempts = difficulty.MaxAttempts;
     }
 }
         

@@ -11,6 +11,7 @@ public class Game
     private readonly Statistics _statistics;
     private readonly GameSettings _gameSettings;
     private bool _isGameOver;
+    private bool _isStarted;
 
 
 
@@ -20,37 +21,32 @@ public class Game
     public Game(INumberGenerator numberGenerator, Statistics statistics,  GameSettings gameSettings)    
     {
         _numberGenerator = numberGenerator;
-        _statistics = statistics;
-       
+        _statistics = statistics;       
         _gameSettings = gameSettings;
         
     }
-
-    
     public void Start()
     {
-        _secretNum = _numberGenerator.Generate(_gameSettings.MinNumber, _gameSettings.MaxNumber + 1);
+        _secretNum = _numberGenerator.Generate(_gameSettings.MinNumber,_gameSettings.MaxNumber + 1);
         _attempts = 0;
         _isGameOver = false;
+        _isStarted = true;
     }
-
     public GuessResult Guess(int userNumber)
     {
-        if(_isGameOver)
+
+        if (!_isStarted)
         {
-            return new GuessResult(
-                "Игра уже завершена",
-                true,
-                0);
+            return new GuessResult("Сначала необходимо запустить игру", true, 0);
+        }
+        if (_isGameOver)
+        {
+            return new GuessResult("Игра уже завершена", true, 0);
         }
 
         if (userNumber < _gameSettings.MinNumber || userNumber > _gameSettings.MaxNumber)
         {
-            return new GuessResult(
-                "Неверное число",
-                false,
-                _gameSettings.MaxAttempts - _attempts);
-               
+            return new GuessResult("Неверное число", false, _gameSettings.MaxAttempts - _attempts);              
             
         }
 
@@ -59,14 +55,15 @@ public class Game
         if (userNumber == _secretNum)
         {
             _isGameOver = true;
-            return new GuessResult(
-                "Поздравляю, ты угадал число!",
+            _statistics.AddGame(_attempts);
+            return new GuessResult("Поздравляю, ты угадал число!",
                 true,
                 _gameSettings.MaxAttempts - _attempts);
         }
         else if (_attempts >= _gameSettings.MaxAttempts)
         {
             _isGameOver = true;
+            _statistics.AddGame(_attempts);
             return new GuessResult(
                 $"Вы проиграли! Загаданное число: {_secretNum}",
                 true,
