@@ -1,57 +1,56 @@
 # ProgramTechnology
+```mermaid
 flowchart TD
     Player("Игрок")
 
-    subgraph Console["NumGameSOLID_Console — Консольное приложение"]
+    subgraph ConsoleApp["NumGameSOLID_Console"]
         Program("Program<br/>Ввод, вывод и управление игрой")
     end
 
-    subgraph Core["NumGameSOLID — Библиотека классов"]
+    subgraph Core["NumGameSOLID"]
         User("User<br/>Профиль пользователя")
         UserService("UserService<br/>Поиск и регистрация пользователей")
 
-        Game("Game<br/>Игровая логика и проверка попыток")
-        Result("GuessResult<br/>Результат игрового хода")
+        Settings("GameSettings<br/>Настройки и диапазон чисел")
+        Game("Game<br/>Проверка попыток и логика игры")
+        GuessResult("GuessResult<br/>Результат игрового хода")
 
-        Settings("GameSettings<br/>Настройки игры")
-        IDifficulty("IDifficulty<br/>Интерфейс сложности")
-        Easy("EasyDifficulty<br/>Лёгкий уровень")
-        Medium("MediumDifficulty<br/>Средний уровень")
-        Hard("HardDifficulty<br/>Сложный уровень")
+        IDifficulty("IDifficulty")
+        Easy("EasyDifficulty")
+        Medium("MediumDifficulty")
+        Hard("HardDifficulty")
 
-        INumber("INumberGenerator<br/>Интерфейс генерации числа")
-        Random("RandomGenerator<br/>Генератор случайных чисел")
+        INumber("INumberGenerator")
+        RandomNumber("RandomGenerator")
 
-        Statistics("Statistics<br/>Статистика пользователя")
+        Statistics("Statistics<br/>Индивидуальная статистика пользователя")
 
-        IUserStorage("IUserStorage<br/>Интерфейс хранения пользователей")
-        FileStorage("UserFileStorage<br/>Файловое хранилище")
+        IUser("IUserStorage")
+        FileStorage("UserFileStorage")
     end
 
     UsersFile[("users.txt")]
 
     Player -->|вводит логин и числа| Program
 
-    Program -->|авторизация и регистрация| UserService
-    UserService -->|находит и создаёт| User
+    Program -->|передаёт логин| UserService
+    UserService -->|находит или создаёт| User
     User -->|содержит| Statistics
 
     Program -->|создаёт и запускает| Game
     Game -->|использует настройки| Settings
-    Game -->|получает случайное число| INumber
-    Random -->|реализует| INumber
-    Game -->|возвращает результат хода| Result
+    Game -->|запрашивает случайное число| INumber
+    RandomNumber -->|реализует| INumber
+    Game -->|возвращает результат хода| GuessResult
     Game -->|обновляет статистику| Statistics
 
-    Settings -->|получает параметры сложности| IDifficulty
+    Program -->|передаёт выбранную сложность| Settings
     Easy -->|реализует| IDifficulty
     Medium -->|реализует| IDifficulty
     Hard -->|реализует| IDifficulty
+    Settings -->|получает параметры сложности| IDifficulty
 
-    UserService -->|загружает и сохраняет пользователей| IUserStorage
-    FileStorage -->|реализует| IUserStorage
+    UserService -->|загружает и сохраняет пользователей| IUser
+    FileStorage -->|реализует| IUser
     FileStorage -->|читает и записывает| UsersFile
-
-    Program -->|выбирает сложность| Easy
-    Program -->|выбирает сложность| Medium
-    Program -->|выбирает сложность| Hard
+    ```
